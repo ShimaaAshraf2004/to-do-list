@@ -12,7 +12,7 @@ emptyBox();
 function addTask() {
     let taskValue = inputTask.value.trim();
     if (taskValue === "") {
-        alert("enter your taske!")
+        alert("Please Enter your Task!")
     } else {
     const li = document.createElement("li");
     li.innerHTML = `
