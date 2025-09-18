@@ -10,10 +10,6 @@ const saveTasks = () => {
   localStorage.setItem("tasks", JSON.stringify(arrayOfTasks));
 };
 
-
-
-
-
 const checkTaskName = (taskName) => {
   if (!taskName) return "please enter your task!";
   if (duplicateName(taskName)) return "This task is duplicated!";
@@ -36,7 +32,7 @@ const addTask = (taskName) => {
   let newTask = {
     id: Date.now(),
     title: taskName,
-    complete: false,
+    complete: false
   };
   arrayOfTasks.push(newTask);
   saveTasks();
@@ -149,8 +145,6 @@ const deleteTask = (id) => {
   }
 };
 
-
-
 const emptyBox = () => {
   const emptyTasks = document.createElement("div");
   emptyTasks.classList.add("empty-tasks");
@@ -178,4 +172,3 @@ addTaskInForm.addEventListener("submit", (event) => {
   addTask(taskName);
   inputTask.value = ""; 
 });
-
