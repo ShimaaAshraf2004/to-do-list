@@ -1,54 +1,59 @@
+const addTaskInForm = document.querySelector(".input-container");
 const inputTask = document.querySelector(".input-task");
-const tasksList = document.querySelector(".taskes");
+const tasksList = document.querySelector(".tasks");
 const addBtn = document.querySelector(".add");
-const boxTasks = document.querySelector(".box-taskes");
-const tasksCounter = document.querySelector(".tasks-counter");
-const tasksCreated = document.querySelector(".tasks-created");
-const completedTasks = document.querySelector(".completed-tasks");
-let arrayOfTasks = [];
-loadTask();
+const TasksCounter = document.querySelector(".tasks-created-num");
+const completedTasks = document.querySelector(".numbers");
+let arrayOfTasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-function addTask() {
-  let taskValue = inputTask.value.trim();
-  if (taskValue === "") {
-    alert("enter your taske!");
-  } else {
-    if (
-      arrayOfTasks.some(
-        (task) => task.title.toLowerCase() === taskValue.toLowerCase()
-      )
-    ) {
-      alert("This task is repeated!");
-      return;
-    }
-    const newTask = {
-      id: Date.now(),
-      title: inputTask.value,
-      complete: false,
-    };
-    arrayOfTasks.push(newTask);
-    saveTask();
-    renderTasks();
-    inputTask.value = "";
-  }
-}
+const saveTasks = () => {
+  localStorage.setItem("tasks", JSON.stringify(arrayOfTasks));
+};
 
-addBtn.addEventListener("click", () => {
-  addTask();
-});
 
-function renderTasks() {
-  tasksList.innerHTML = "";
-  emptyBox();
-  arrayOfTasks.forEach((task) => {
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <img class="uncheck-icon" src="${
-        task.complete ? "images/check-icon.svg" : "images/uncheck-icon.svg"
-      }" alt="${task.complete ? "checked" : "un-checked"}">
+
+
+
+const checkTaskName = (taskName) => {
+  if (!taskName) return "please enter your task!";
+  if (duplicateName(taskName)) return "This task is duplicated!";
+  return "";
+};
+
+const duplicateName = (taskName) => {
+  return arrayOfTasks.some((task) => task.title === taskName);
+};
+
+const totalTasks = () => {
+  TasksCounter.textContent = arrayOfTasks.length;
+};
+
+const totalcompleteTasks = () => {
+  completedTasks.textContent = `${arrayOfTasks.filter((task) => task.complete).length} of ${arrayOfTasks.length}`
+};
+
+const addTask = (taskName) => {
+  let newTask = {
+    id: Date.now(),
+    title: taskName,
+    complete: false,
+  };
+  arrayOfTasks.push(newTask);
+  saveTasks();
+  totalTasks();
+  totalcompleteTasks();
+  renderTask();
+};
+
+const createElementTask = (task) => {
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <img class="uncheck-icon" src="${
+      task.complete ? "images/check-icon.svg" : "images/uncheck-icon.svg"
+    }" alt="${task.complete ? "checked" : "un-checked"}">
       <span class="text">${task.title}</span>
       <button type="button" class="delete-btn">
-  <svg
+    <svg
     class="delete-icon"
     viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg"
@@ -104,72 +109,73 @@ function renderTasks() {
       </g>
     </g>
   </svg>
-</button>
-      `;
-    li.classList = task.complete ? "checked" : "un-checked";
-    li.querySelector(".delete-icon").addEventListener("click", () => {
-      deleteTask(task.id);
-    });
-    li.addEventListener("click", () => {
-      checkTask(task.id);
-    });
-    tasksList.appendChild(li);
+  </button>`;
+  li.classList = task.complete ? "checked" : "un-checked";
+  const deleteBtn = li.querySelector(".delete-btn");
+  deleteBtn.addEventListener("click", () => {
+    deleteTask(task.id);
   });
-  taskCount();
-}
+  li.addEventListener("click", ()=> {
+    checkTask(task)
+  });
+  return li;
+};
 
-function taskCount() {
-  tasksCreated.querySelector("span").textContent = arrayOfTasks.length;
-  completedTasks.querySelector(".numbers .total-tasks").textContent =
-    arrayOfTasks.length;
-  completedTasks.querySelector(".numbers .finished-tasks").textContent =
-    arrayOfTasks.filter((task) => task.complete === true).length;
-}
-
-function checkTask(id) {
-  const task = arrayOfTasks.find((task) => task.id === id);
-  if (task) {
-    task.complete = !task.complete;
-    saveTask();
-    renderTasks();
-  }
-}
-function deleteTask(id) {
-  arrayOfTasks = arrayOfTasks.filter((task) => task.id !== id);
-  saveTask();
-  renderTasks();
-}
-
-function emptyBox() {
-  if (arrayOfTasks.length === 0) {
-    const empytTasks = document.createElement("div");
-    empytTasks.classList.add("empyt-tasks", "container");
-    empytTasks.innerHTML = `
-        <img src="images/empty-tasks.svg" alt="empty-tasks">
-        <p>
-            <span>You don't have any tasks registered yet</span> <br/>
-            <span>Create tasks and organize your to-do items</span>
-        </p>
-        `;
-    boxTasks.appendChild(empytTasks);
+const renderTask = () => {
+  tasksList.innerHTML = "";
+  if(arrayOfTasks.length > 0) {
+    arrayOfTasks.forEach((task) => {
+      tasksList.prepend(createElementTask(task));
+    });
   } else {
-    const empytTasksBox = document.querySelector(".empyt-tasks");
-    if (empytTasksBox) {
-      empytTasksBox.remove();
-    }
+    tasksList.appendChild(emptyBox());
   }
-}
+};
 
-function saveTask() {
-  localStorage.setItem("task", JSON.stringify(arrayOfTasks));
-}
+const checkTask = (task) => {
+  task.complete = !task.complete;
+  saveTasks();
+  renderTask();
+  totalcompleteTasks();
+};
 
-function loadTask() {
-  const data = localStorage.getItem("task");
-  if (data) {
-    arrayOfTasks = JSON.parse(data);
-    renderTasks();
+const deleteTask = (id) => {
+  if (confirm("are you sure to remove this task?")) {
+    arrayOfTasks = arrayOfTasks.filter((task) => task.id !== id);
+    saveTasks();
+    renderTask();
+    totalTasks();
+    totalcompleteTasks();
   }
-}
+};
 
-console.log(arrayOfTasks);
+
+
+const emptyBox = () => {
+  const emptyTasks = document.createElement("div");
+  emptyTasks.classList.add("empty-tasks");
+  emptyTasks.innerHTML = `
+    <img src="images/empty-tasks.svg" alt="empty-tasks">
+    <p>
+      <span>You don't have any tasks registered yet</span> <br/>
+      <span>Create tasks and organize your to-do items</span>
+    </p>`;
+  return emptyTasks;
+};
+
+renderTask();
+totalTasks();
+totalcompleteTasks();
+
+addTaskInForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+  const taskName = inputTask.value.trim();
+  const alertMsg = checkTaskName(taskName);
+  if (alertMsg) {
+    alert(alertMsg);
+    return "";
+  }
+  addTask(taskName);
+  inputTask.value = ""; 
+});
+
