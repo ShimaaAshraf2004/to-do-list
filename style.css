@@ -171,25 +171,42 @@ main {
   box-shadow: 0px 2px 8px 0px #0000000f;
   background: #262626;
 }
-.box-tasks .tasks :where(img,.delete-btn){
+.box-tasks .tasks :where(img,.edit-btn,.delete-btn){
   cursor: pointer;
 }
 .box-tasks .tasks span {
   margin-right: auto;
 }
-.box-tasks .tasks .delete-btn {
+.box-tasks .tasks .task-controls {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.box-tasks .tasks .task-controls :where(.edit-btn,.delete-btn) {
+  width: 24px;
+  height: 24px;
   background-color:  transparent;
   border: none;
   border-radius: 4px;
   transition: all var(--transition-duration) var(--transition-timing-function);
 }
-.box-tasks .tasks .delete-btn:hover {
+.box-tasks .tasks .task-controls  .edit-btn:hover {
   background-color: #333333;
 }
-.box-tasks .tasks .delete-btn .delete-icon {
+.box-tasks .tasks .task-controls  .delete-btn:hover {
+  background-color: #333333;
+}
+.box-tasks .tasks .task-controls .edit-btn .edit-icon {
   vertical-align: middle;
 }
-.box-tasks .tasks .delete-btn:hover .delete-icon path {
+.box-tasks .tasks .task-controls .delete-btn .delete-icon {
+  vertical-align: middle;
+} 
+.box-tasks .tasks .task-controls .edit-btn:hover .edit-icon path {
+  stroke: #58e258;
+  background: #333333;
+}
+.box-tasks .tasks .task-controls .delete-btn:hover .delete-icon path {
   fill: #e25858;
   background: #333333;
 }
